@@ -74,7 +74,73 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
     <button data-view="split" id="btnSplit">split</button>
   </div>
   <div id="editorContainer">
-    <textarea id="mdInput" placeholder="Enter Markdown here..."></textarea>
+    <textarea id="mdInput" placeholder="Enter Markdown here..."># Markdown Viewer with Graphics Support
+
+(you can edit and delete this content with your own or paste in)
+
+Here's a sample Markdown document designed to showcase all the features supported by the **Graphical Markdown Converter**. You can set this as the default content in your Markdown editor to demonstrate live rendering of diagrams, syntax-highlighted code blocks, tables, inline SVG graphics, and more.
+
+```markdown
+# Sample Document
+
+Welcome to the **Graphical Markdown Converter** demo. This document showcases various features such as live preview, Mermaid diagrams, syntax-highlighted code blocks, tables, and inline SVG graphics.
+
+## Diagram Example
+
+Below is a Mermaid diagram demonstrating a simple flow:
+
+```mermaid
+graph TD;
+    A[Start] --> B{Is it working?};
+    B -- Yes --> C[Great!];
+    B -- No --> D[Fix it!];
+    D --> B;
+```
+
+## Code Example
+
+Here's a JavaScript code snippet with syntax highlighting:
+
+```javascript
+// A simple greeting function
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+}
+
+greet("World");
+```
+
+## Table Example
+
+The table below lists some features and their statuses:
+
+| Feature           | Supported |
+| ----------------- | --------- |
+| Live Preview      | Yes       |
+| Mermaid Diagrams  | Yes       |
+| Syntax Highlight  | Yes       |
+| Table Styling     | Yes       |
+| SVG Rendering     | Yes       |
+
+## Inline SVG Example
+
+Below is an inline SVG graphic rendered directly from Markdown:
+
+```svg
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+</svg>
+```
+
+## Additional Content
+
+You can also include regular text, lists, images, and more:
+
+- Bullet points are supported.
+- **Bold** and *italic* text work seamlessly.
+- [Links](https://github.com) can be included.
+
+</textarea>
     <div id="htmlOutput" class="html-output"></div>
   </div>
 
