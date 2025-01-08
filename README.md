@@ -1,6 +1,8 @@
-# VizMark Converter
+# Graphical Markdown Converter
 
-VizMark Converter is a web-based tool for converting GitHub-flavored Markdown into clean HTML with rich graphical and visual support. It supports rendering Mermaid diagrams, syntax-highlighted code blocks, tables, and inline SVG graphics, providing a powerful and interactive way to view and export your Markdown content as HTML.
+[Live Demo](https://deftio.github.io/graphical_md_viewer)
+
+Graphical Markdown Converter is a web-based tool for converting GitHub-flavored Markdown into clean HTML with rich graphical and visual support. It supports rendering Mermaid diagrams, syntax-highlighted code blocks, tables, and inline SVG graphics, providing a powerful and interactive way to view and export your Markdown content as HTML.
 
 ## Features
 
@@ -13,10 +15,11 @@ VizMark Converter is a web-based tool for converting GitHub-flavored Markdown in
 
 ## Getting Started
 
-1. **Clone the Repository:**
+**Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/vizmark-converter.git
-   cd vizmark-converter
+   git clone https://github.com/deftio/graphical_md_viewer.git
+   cd graphical_md_viewer
+   ```
 Open the Application: Since this is a static HTML project, simply open index.html in your preferred web browser:
 
 Double-click index.html or
@@ -26,24 +29,33 @@ Use the Converter:
 Select a view mode (md, html, split) using the buttons at the top.
 Enter your GitHub-flavored Markdown into the editor on the left (in split or md view).
 The right side will render the HTML output live, complete with diagrams, code highlighting, and more.
-Contributing
+
+## Contributing
+
 Contributions are welcome! Whether you're adding new features, fixing bugs, or improving documentation, please follow these guidelines:
 
 Fork the Repository: Click the "Fork" button on GitHub to create your own copy.
-Create a Branch:
-bash
-Copy code
+
+**Create a Branch:**
+```bash
 git checkout -b feature/your-feature-name
-Commit Your Changes: Make your changes and commit them with a clear message.
-bash
-Copy code
+```
+
+**Commit Your Changes:** Make your changes and commit them with a clear message.
+```bash
 git commit -m "Add description of changes"
-Push to Your Fork:
-bash
-Copy code
+```
+
+**Push to Your Fork:**
+```bash
 git push origin feature/your-feature-name
-Open a Pull Request: Go to the original repository on GitHub and open a pull request from your fork's branch. Provide a clear description of your changes and why they’re useful.
+```
+
+**Open a Pull Request:** Go to the original repository on GitHub and open a pull request from your fork's branch. Provide a clear description of your changes and why they’re useful.
+
 Please make sure your contributions follow the project's coding style and that tests pass, if applicable.
 
-License
+## License
+
 This project is licensed under the BSD-2 License. See the LICENSE file for details.
+
