@@ -10,20 +10,30 @@ Allows live editing of Markdown content with a split view of the rendered HTML o
 Also supports Mermaid diagrams and SVG content within fenced code blocks.
 
 -->
+
 <head>
   <meta charset="UTF-8" />
   <title>Markdown Viewer with Graphics Support</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; 
-      padding: 1% 4%; }
-    header { 
-      background: none; 
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1% 4%;
+    }
+
+    header {
+      background: none;
       /* padding: 1em 1em; */
-      text-align: left; 
+      text-align: left;
       font-size: 1.5em;
     }
-    #controls { padding: 0.5em 0em; text-align: left; }
+
+    #controls {
+      padding: 0.5em 0em;
+      text-align: left;
+    }
+
     #controls button {
       margin: 0 0.3em;
       padding: 0.3em 0.6em;
@@ -33,29 +43,56 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       border-radius: 4px;
       background-color: #f9f9f9;
     }
+
     #controls button.active {
       background-color: #e0e0e0;
     }
-    #editorContainer { display: flex; height: 80vh; }
-    #mdInput, #htmlOutput { height: 100%; box-sizing: border-box; }
-    #mdInput { padding: 1em; font-family: monospace; font-size: 1em; }
-    .html-output { padding: 1em; overflow: auto; border-left: 1px solid #ccc; }
-    .hidden { display: none; }
+
+    #editorContainer {
+      display: flex;
+      height: 80vh;
+    }
+
+    #mdInput,
+    #htmlOutput {
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    #mdInput {
+      padding: 1em;
+      font-family: monospace;
+      font-size: 1em;
+    }
+
+    .html-output {
+      padding: 1em;
+      overflow: auto;
+      border-left: 1px solid #ccc;
+    }
+
+    .hidden {
+      display: none;
+    }
+
     /* Table styling for better readability */
     .html-output table {
       border-collapse: collapse;
       width: 100%;
       margin-bottom: 1em;
     }
-    .html-output th, 
+
+    .html-output th,
     .html-output td {
       border: 1px solid #ccc;
       padding: 0.5em;
       text-align: left;
     }
+
     .html-output th {
       background: #f0f0f0;
     }
+
     /* Code block styling adjustments */
     .html-output pre code {
       display: block;
@@ -65,6 +102,7 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
     }
   </style>
 </head>
+
 <body>
   <header>Markdown Viewer with Graphics Support</header>
   <div id="controls">
@@ -74,14 +112,11 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
     <button data-view="split" id="btnSplit">split</button>
   </div>
   <div id="editorContainer">
-    <textarea id="mdInput" placeholder="Enter Markdown here..."># Markdown Viewer with Graphics Support
+    <textarea id="mdInput" placeholder="Enter Markdown here...">
+# Markdown Viewer with Graphics Support
 
 (you can edit and delete this content with your own or paste in)
 
-Here's a sample Markdown document designed to showcase all the features supported by the **Graphical Markdown Converter**. You can set this as the default content in your Markdown editor to demonstrate live rendering of diagrams, syntax-highlighted code blocks, tables, inline SVG graphics, and more.
-
-```markdown
-# Sample Document
 
 Welcome to the **Graphical Markdown Converter** demo. This document showcases various features such as live preview, Mermaid diagrams, syntax-highlighted code blocks, tables, and inline SVG graphics.
 
@@ -140,6 +175,7 @@ You can also include regular text, lists, images, and more:
 - **Bold** and *italic* text work seamlessly.
 - [Links](https://github.com) can be included.
 
+
 </textarea>
     <div id="htmlOutput" class="html-output"></div>
   </div>
@@ -162,7 +198,7 @@ You can also include regular text, lists, images, and more:
         if (lang && hljs.getLanguage(lang)) {
           try {
             return hljs.highlight(str, { language: lang }).value;
-          } catch (__) {}
+          } catch (__) { }
         }
         // Fallback: return empty string so that Markdown-it uses its own escaping.
         return '';
@@ -170,11 +206,11 @@ You can also include regular text, lists, images, and more:
     });
 
     // Extend fence rule to handle special blocks for Mermaid and SVG
-    const defaultFence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
+    const defaultFence = md.renderer.rules.fence || function (tokens, idx, options, env, self) {
       return self.renderToken(tokens, idx, options);
     };
 
-    md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+    md.renderer.rules.fence = function (tokens, idx, options, env, self) {
       const token = tokens[idx];
       const info = token.info.trim();
       if (info === 'mermaid') {
@@ -243,4 +279,5 @@ You can also include regular text, lists, images, and more:
     switchView(currentView);
   </script>
 </body>
+
 </html>
