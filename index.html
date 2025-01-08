@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+Visual Markdown Viewer with Graphics Support
+Author: @deftio
+
+Uses Markdown-it for parsing Markdown content, Highlight.js for syntax highlighting, and Mermaid for diagrams.
+
+Allows live editing of Markdown content with a split view of the rendered HTML output. 
+Also supports Mermaid diagrams and SVG content within fenced code blocks.
+
+-->
+<head>
+  <meta charset="UTF-8" />
+  <title>Markdown Viewer with Graphics Support</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { 
+      background: none; 
+      padding: 1em 1em; 
+      text-align: left; 
+      font-size: 1.5em;
+      border-bottom: 1px solid #ccc;
+    }
+    #controls { padding: 0.5em; text-align: left; }
+    #controls button {
+      margin: 0 0.3em;
+      padding: 0.3em 0.6em;
+      font-size: 0.9em;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    #controls button.active {
+      background-color: #e0e0e0;
+    }
+    #editorContainer { display: flex; height: 80vh; }
+    #mdInput, #htmlOutput { height: 100%; box-sizing: border-box; }
+    #mdInput { padding: 1em; font-family: monospace; font-size: 1em; }
+    .html-output { padding: 1em; overflow: auto; border-left: 1px solid #ccc; }
+    .hidden { display: none; }
+    /* Table styling for better readability */
+    .html-output table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+    .html-output th, 
+    .html-output td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: left;
+    }
+    .html-output th {
+      background: #f0f0f0;
+    }
+    /* Code block styling adjustments */
+    .html-output pre code {
+      display: block;
+      padding: 0.5em;
+      background: #f7f7f7;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>Markdown Viewer with Graphics Support</header>
+  <div id="controls">
+    Select View:
+    <button data-view="md" id="btnMd">md</button>
+    <button data-view="html" id="btnHtml">html</button>
+    <button data-view="split" id="btnSplit">split</button>
+  </div>
+  <div id="editorContainer">
+    <textarea id="mdInput" placeholder="Enter Markdown here..."></textarea>
+    <div id="htmlOutput" class="html-output"></div>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.3.2/markdown-it.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+  <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+
+  <script>
+    // Initialize Mermaid without auto-start
+    mermaid.initialize({ startOnLoad: false });
+
+    // Set up Markdown-it with syntax highlighting and Mermaid support
+    const md = window.markdownit({
+      html: true,
+      linkify: true,
+      typographer: true,
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(str, { language: lang }).value;
+          } catch (__) {}
+        }
+        // Fallback: return empty string so that Markdown-it uses its own escaping.
+        return '';
+      }
+    });
+
+    // Extend fence rule to handle special blocks for Mermaid and SVG
+    const defaultFence = md.renderer.rules.fence || function(tokens, idx, options, env, self) {
+      return self.renderToken(tokens, idx, options);
+    };
+
+    md.renderer.rules.fence = function(tokens, idx, options, env, self) {
+      const token = tokens[idx];
+      const info = token.info.trim();
+      if (info === 'mermaid') {
+        return '<div class="mermaid">' + token.content + '</div>';
+      }
+      if (info === 'svg') {
+        // Directly render SVG content
+        return token.content;
+      }
+      return defaultFence(tokens, idx, options, env, self);
+    };
+
+    // Element references
+    const buttons = document.querySelectorAll('#controls button');
+    const mdInput = document.getElementById('mdInput');
+    const htmlOutput = document.getElementById('htmlOutput');
+
+    // Current view state
+    let currentView = 'split';
+
+    // Function to render the Markdown content to HTML and update Mermaid diagrams
+    function renderMarkdown() {
+      const html = md.render(mdInput.value);
+      htmlOutput.innerHTML = html;
+      mermaid.init(undefined, htmlOutput.querySelectorAll('.mermaid'));
+    }
+
+    // Function to switch views and update button states
+    function switchView(view) {
+      currentView = view;
+
+      // Update active button style
+      buttons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+
+      // Update layout based on selected view
+      if (view === 'md') {
+        mdInput.classList.remove('hidden');
+        htmlOutput.classList.add('hidden');
+        mdInput.style.width = '100%';
+      } else if (view === 'html') {
+        mdInput.classList.add('hidden');
+        htmlOutput.classList.remove('hidden');
+        htmlOutput.style.width = '100%';
+      } else { // split view
+        mdInput.classList.remove('hidden');
+        htmlOutput.classList.remove('hidden');
+        mdInput.style.width = '50%';
+        htmlOutput.style.width = '50%';
+      }
+    }
+
+    // Event listeners for view buttons
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        switchView(button.dataset.view);
+      });
+    });
+
+    // Live update as user types
+    mdInput.addEventListener('input', renderMarkdown);
+
+    // Initial render and setup
+    renderMarkdown();
+    switchView(currentView);
+  </script>
+</body>
+</html>
