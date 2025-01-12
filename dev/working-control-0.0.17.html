@@ -24,14 +24,18 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       flex-direction: column;
     }
 
+    header {
+      background: none;
+      text-align: left;
+      font-size: 1.5em;
+      flex: 0 0 auto;
+    }
+
     #editorContainer {
-      margin-top: 0.5em;
+      flex: 1 1 auto;
+      margin-top: 1em;
       min-height: 0; /* Important for Firefox */
-      height: 90vh;
-      display: flex;
-      flex-direction: column;
-      /* border : 1px solid lightgrey; */
-      border-radius: 5px;
+      height: 80vh;
     }
 
     .graphical-md {
@@ -135,14 +139,7 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.3.2/markdown-it.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
   <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-<!-- 
-  <div id="testControls">
-    <button onclick="toggleTitle()" style="margin-right: 10px; padding: 8px 16px; border-radius: 4px; border: 1px solid #2a57d3; background: white; color: #2a57d3; cursor: pointer;">Toggle Title</button>
-    <button onclick="toggleControls()" style="padding: 8px 16px; border-radius: 4px; border: 1px solid #2a57d3; background: white; color: #2a57d3; cursor: pointer;">Toggle Controls</button>
-    <button onclick="toggleView()" style="padding: 8px 16px; border-radius: 4px; border: 1px solid #2a57d3; background: white; color: #2a57d3; cursor: pointer;">Toggle View</button>
-    <hr>
-  </div>
--->
+
   <div id="editorContainer"></div>
 
   <script>
@@ -248,34 +245,13 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       }
 
       initializeResizeObserver() {
-        const resizeObserver = new ResizeObserver(entries => {
-          for (let entry of entries) {
-            if (entry.target === this.container) {
-              this.adjustLayout();
-            }
+        const resizeObserver = new ResizeObserver(() => {
+          if (this.currentView === 'split') {
+            this.input.style.width = '50%';
+            this.output.style.width = '50%';
           }
         });
         resizeObserver.observe(this.container);
-      }
-
-      adjustLayout() {
-        const containerRect = this.container.getBoundingClientRect();
-        const titleHeight = this.title.offsetHeight;
-        const controlsHeight = this.controls.offsetHeight;
-
-        const availableHeight = containerRect.height - titleHeight - controlsHeight;
-        const availableWidth = containerRect.width;
-        this.editor.style.height = `${availableHeight}px`;
-        this.editor.style.width = `${availableWidth}px`;
-
-        if (this.currentView === 'split') {
-          this.input.style.width = '50%';
-          this.output.style.width = '50%';
-        } else if (this.currentView === 'md') {
-          this.input.style.width = '100%';
-        } else if (this.currentView === 'html') {
-          this.output.style.width = '100%';
-        }
       }
 
       setContent(content) {
@@ -323,8 +299,6 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
           copyMDButton.classList.remove('hidden');
           copyHTMLButton.classList.remove('hidden');
         }
-
-        this.adjustLayout();
       }
 
       async copyContent() {
@@ -468,13 +442,11 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       controlsShow(show) {
         this.controls.style.display = show ? '' : 'none';
         this.options.showControls = show;
-        this.adjustLayout();
       }
 
       titleShow(show) {
         this.title.style.display = show ? '' : 'none';
         this.options.titleShow = show;
-        this.adjustLayout();
       }
 
       titleSetContent(content) {
@@ -533,151 +505,151 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
         copyButton.textContent = 'Copying...';
 
         try {
-          const contentDiv = this.output.querySelector('div[contenteditable="true"]');
-          if (!contentDiv) {
-            throw new Error('Content div not found');
-          }
-
-          const clone = contentDiv.cloneNode(true);
-
-          // Process code blocks
-          clone.querySelectorAll('pre code').forEach(block => {
-            const formattedCode = block.innerHTML;
-
-            const table = document.createElement('table');
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
-            table.style.border = 'none';
-
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
-            td.style.backgroundColor = '#f7f7f7';
-            td.style.padding = '12px';
-            td.style.fontFamily = 'Consolas, Monaco, "Courier New", monospace';
-            td.style.whiteSpace = 'pre';
-            td.style.border = 'none';
-
-            td.innerHTML = formattedCode.trim();
-
-            tr.appendChild(td);
-            table.appendChild(tr);
-            block.parentNode.replaceWith(table);
-          });
-
-          // Convert SVG elements to PNG
-          const svgElements = clone.querySelectorAll('svg');
-          for (const svg of svgElements) {
-            try {
-              const pngBlob = await this.svgToPng(svg);
-              const dataUrl = await new Promise(resolve => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(pngBlob);
-              });
-
-              const img = document.createElement('img');
-              img.src = dataUrl;
-              img.width = svg.clientWidth || svg.viewBox.baseVal.width || 100;
-              img.height = svg.clientHeight || svg.viewBox.baseVal.height || 100;
-              img.setAttribute('v:shapes', 'image' + Math.random().toString(36).substr(2, 9));
-              img.style.width = img.width + 'px';
-              img.style.height = img.height + 'px';
-              img.alt = "Converted diagram";
-              svg.parentNode.replaceChild(img, svg);
-            } catch (error) {
-              console.error('Failed to convert SVG:', error);
+            const contentDiv = this.output.querySelector('div[contenteditable="true"]');
+            if (!contentDiv) {
+                throw new Error('Content div not found');
             }
-          }
 
-          const htmlContent = `
-            <html xmlns:v="urn:schemas-microsoft-com:vml"
-                  xmlns:o="urn:schemas-microsoft-com:office:office"
-                  xmlns:w="urn:schemas-microsoft-com:office:word">
-              <head>
-                <meta charset="utf-8">
-                <style>
-                  table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
-                  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                  th { background-color: #f0f0f0; font-weight: bold; }
+            const clone = contentDiv.cloneNode(true);
+            
+            // Process code blocks
+            clone.querySelectorAll('pre code').forEach(block => {
+                const formattedCode = block.innerHTML;
+                
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                table.style.border = 'none';
+                
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.style.backgroundColor = '#f7f7f7';
+                td.style.padding = '12px';
+                td.style.fontFamily = 'Consolas, Monaco, "Courier New", monospace';
+                td.style.whiteSpace = 'pre';
+                td.style.border = 'none';
+                
+                td.innerHTML = formattedCode.trim();
+                
+                tr.appendChild(td);
+                table.appendChild(tr);
+                block.parentNode.replaceWith(table);
+            });
 
-                  /* Code block styling */
-                  .hljs { display: block; overflow-x: auto; padding: 1em; }
-                  .hljs-keyword { color: #0033B3; }
-                  .hljs-string { color: #067D17; }
-                  .hljs-comment { color: #8C8C8C; }
-                  .hljs-function { color: #00627A; }
-                  .hljs-number { color: #1750EB; }
-                  .hljs-operator { color: #687687; }
-                  .hljs-punctuation { color: #000000; }
+            // Convert SVG elements to PNG
+            const svgElements = clone.querySelectorAll('svg');
+            for (const svg of svgElements) {
+                try {
+                    const pngBlob = await this.svgToPng(svg);
+                    const dataUrl = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(pngBlob);
+                    });
 
-                  /* Word-specific image handling */
-                  img { display: block; max-width: none; }
-                </style>
-              </head>
-              <body>
-                ${clone.innerHTML}
-              </body>
-            </html>`;
-
-          const platform = this.getPlatform();
-
-          if (platform === 'macos') {
-            // macOS approach (previously working version)
-            try {
-              await navigator.clipboard.write([
-                new ClipboardItem({
-                  'text/html': new Blob([htmlContent], { type: 'text/html' }),
-                  'text/plain': new Blob([clone.innerText], { type: 'text/plain' })
-                })
-              ]);
-            } catch (modernErr) {
-              // Safari fallback
-              if (!this.copyToClipboard(htmlContent)) {
-                throw new Error('Fallback copy failed');
-              }
+                    const img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.width = svg.clientWidth || svg.viewBox.baseVal.width || 100;
+                    img.height = svg.clientHeight || svg.viewBox.baseVal.height || 100;
+                    img.setAttribute('v:shapes', 'image' + Math.random().toString(36).substr(2, 9));
+                    img.style.width = img.width + 'px';
+                    img.style.height = img.height + 'px';
+                    img.alt = "Converted diagram";
+                    svg.parentNode.replaceChild(img, svg);
+                } catch (error) {
+                    console.error('Failed to convert SVG:', error);
+                }
             }
-          } else {
-            // Windows/Linux approach
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'fixed';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '0';
-            tempDiv.innerHTML = htmlContent;
-            document.body.appendChild(tempDiv);
 
-            try {
-              await navigator.clipboard.write([
-                new ClipboardItem({
-                  'text/html': new Blob([htmlContent], { type: 'text/html' }),
-                  'text/plain': new Blob([clone.innerText], { type: 'text/plain' })
-                })
-              ]);
-            } catch (modernErr) {
-              const selection = window.getSelection();
-              const range = document.createRange();
-              range.selectNodeContents(tempDiv);
-              selection.removeAllRanges();
-              selection.addRange(range);
+            const htmlContent = `
+                <html xmlns:v="urn:schemas-microsoft-com:vml" 
+                      xmlns:o="urn:schemas-microsoft-com:office:office" 
+                      xmlns:w="urn:schemas-microsoft-com:office:word">
+                    <head>
+                        <meta charset="utf-8">
+                        <style>
+                            table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
+                            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                            th { background-color: #f0f0f0; font-weight: bold; }
+                            
+                            /* Code block styling */
+                            .hljs { display: block; overflow-x: auto; padding: 1em; }
+                            .hljs-keyword { color: #0033B3; }
+                            .hljs-string { color: #067D17; }
+                            .hljs-comment { color: #8C8C8C; }
+                            .hljs-function { color: #00627A; }
+                            .hljs-number { color: #1750EB; }
+                            .hljs-operator { color: #687687; }
+                            .hljs-punctuation { color: #000000; }
 
-              const successful = document.execCommand('copy');
-              if (!successful) {
-                throw new Error('Fallback copy failed');
-              }
-            } finally {
-              if (tempDiv && tempDiv.parentNode) {
-                document.body.removeChild(tempDiv);
-              }
+                            /* Word-specific image handling */
+                            img { display: block; max-width: none; }
+                        </style>
+                    </head>
+                    <body>
+                        ${clone.innerHTML}
+                    </body>
+                </html>`;
+
+            const platform = this.getPlatform();
+            
+            if (platform === 'macos') {
+                // macOS approach (previously working version)
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': new Blob([htmlContent], { type: 'text/html' }),
+                            'text/plain': new Blob([clone.innerText], { type: 'text/plain' })
+                        })
+                    ]);
+                } catch (modernErr) {
+                    // Safari fallback
+                    if (!this.copyToClipboard(htmlContent)) {
+                        throw new Error('Fallback copy failed');
+                    }
+                }
+            } else {
+                // Windows/Linux approach
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'fixed';
+                tempDiv.style.left = '-9999px';
+                tempDiv.style.top = '0';
+                tempDiv.innerHTML = htmlContent;
+                document.body.appendChild(tempDiv);
+
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': new Blob([htmlContent], { type: 'text/html' }),
+                            'text/plain': new Blob([clone.innerText], { type: 'text/plain' })
+                        })
+                    ]);
+                } catch (modernErr) {
+                    const selection = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(tempDiv);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    const successful = document.execCommand('copy');
+                    if (!successful) {
+                        throw new Error('Fallback copy failed');
+                    }
+                } finally {
+                    if (tempDiv && tempDiv.parentNode) {
+                        document.body.removeChild(tempDiv);
+                    }
+                }
             }
-          }
 
-          copyButton.textContent = 'Copied!';
+            copyButton.textContent = 'Copied!';
         } catch (err) {
-          console.error('Copy HTML failed:', err);
-          copyButton.textContent = 'Copy failed';
+            console.error('Copy HTML failed:', err);
+            copyButton.textContent = 'Copy failed';
         }
 
         setTimeout(() => {
-          copyButton.textContent = 'Copy Formatted';
+            copyButton.textContent = 'Copy Formatted';
         }, 2000);
       }
 
@@ -690,46 +662,46 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
         let result;
 
         try {
-          textarea = document.createElement('textarea');
-          textarea.setAttribute('readonly', true);
-          textarea.setAttribute('contenteditable', true);
-          textarea.style.position = 'fixed';
-          textarea.style.left = '0';
-          textarea.style.top = '0';
-          textarea.style.opacity = '0';
-          textarea.value = string;
+            textarea = document.createElement('textarea');
+            textarea.setAttribute('readonly', true);
+            textarea.setAttribute('contenteditable', true);
+            textarea.style.position = 'fixed';
+            textarea.style.left = '0';
+            textarea.style.top = '0';
+            textarea.style.opacity = '0';
+            textarea.value = string;
 
-          document.body.appendChild(textarea);
+            document.body.appendChild(textarea);
 
-          textarea.focus();
-          textarea.select();
+            textarea.focus();
+            textarea.select();
 
-          const range = document.createRange();
-          range.selectNodeContents(textarea);
+            const range = document.createRange();
+            range.selectNodeContents(textarea);
 
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(range);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
 
-          textarea.setSelectionRange(0, textarea.value.length);
-          result = document.execCommand('copy');
+            textarea.setSelectionRange(0, textarea.value.length);
+            result = document.execCommand('copy');
         } catch (err) {
-          console.error(err);
-          result = null;
+            console.error(err);
+            result = null;
         } finally {
-          if (textarea && textarea.parentNode) {
-            document.body.removeChild(textarea);
-          }
+            if (textarea && textarea.parentNode) {
+                document.body.removeChild(textarea);
+            }
         }
 
         // manual copy fallback using prompt
         if (!result) {
-          const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-          const copyHotkey = isMac ? '⌘C' : 'CTRL+C';
-          result = prompt(`Press ${copyHotkey}`, string);
-          if (!result) {
-            return false;
-          }
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const copyHotkey = isMac ? '⌘C' : 'CTRL+C';
+            result = prompt(`Press ${copyHotkey}`, string);
+            if (!result) {
+                return false;
+            }
         }
         return true;
       }
@@ -737,29 +709,16 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       getPlatform() {
         const platform = navigator.platform.toLowerCase();
         const userAgent = navigator.userAgent.toLowerCase();
-
+        
         if (platform.includes('mac') || userAgent.includes('mac')) {
-          return 'macos';
+            return 'macos';
         } else if (userAgent.includes('windows')) {
-          return 'windows';
+            return 'windows';
         } else if (userAgent.includes('linux')) {
-          return 'linux';
+            return 'linux';
         }
         return 'unknown';
       }
-    }
-
-    // Standalone function to toggle between Markdown preview and split view
-    function toggleView() {
-      const editor = window.editor;
-      if (editor.currentView === 'md') {
-        editor.setView('split');
-      } else if (editor.currentView === 'split') {
-        editor.setView('html');
-      } else 
-        editor.setView('md')
-
-      console.log(editor.currentView)
     }
   </script>
 
@@ -768,8 +727,6 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       titleShow: true,
       titleContent: "Graphical Markdown Editor " + GraphicalMD.version.version
     });
-
-    window.editor = editor; // Make the editor instance accessible globally
 
     editor.setContent(`# Markdown Viewer with Graphics Support
 
@@ -840,16 +797,6 @@ You can also include regular text, lists, images, and more:
 - Bullet points are supported.
 - **Bold** and *italic* text work seamlessly.
 - [Links](https://github.com) can be included.`);
-
-    function toggleTitle() {
-      const currentState = editor.title.style.display !== 'none';
-      editor.titleShow(!currentState);
-    }
-
-    function toggleControls() {
-      const currentState = editor.controls.style.display !== 'none';
-      editor.controlsShow(!currentState);
-    }
   </script>
 </body>
 </html>
