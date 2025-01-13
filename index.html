@@ -146,6 +146,16 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
   <div id="editorContainer"></div>
 
   <script>
+    removeHorizontalLinesFromMardown = (markdown) => {
+      return markdown.replace(/---/g, '');
+    }
+    // use the above function to remove horizontal lines from the markdown div
+    removeAllHR = () => {
+      const markdown = window.editor.getMarkdownSource();
+      const newMarkdown = removeHorizontalLinesFromMardown(markdown);
+      window.editor.setContent(newMarkdown);
+    }
+
     class GraphicalMD {
       static defaultOptions = {
         initialContent: '',
@@ -774,6 +784,8 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
     editor.setContent(`# Markdown Viewer with Graphics Support
 
 Welcome to the **Graphical Markdown Converter** demo. This document showcases various features such as live preview, Mermaid diagrams, syntax-highlighted code blocks, tables, and inline SVG graphics.
+
+[Code is Here on GitHub](www.github.com/deftio/graphics-md-viewer)
 
 ## Diagram Example
 
