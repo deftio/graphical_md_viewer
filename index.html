@@ -13,7 +13,8 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
 <head>
   <meta charset="UTF-8" />
   <title>Markdown Viewer with Graphics Support</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23f57c00' stroke='%23000' stroke-width='1'/><path d='M2 16h28M16 2a14 14 0 0114 14 14 14 0 01-14 14 14 14 0 01-14-14A14 14 0 0116 2zm0 0v28M9 16a7 7 0 0014 0 7 7 0 00-14 0z' fill='none' stroke='%23000' stroke-width='1'/></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23f57c00' stroke='%23000' stroke-width='1'/><path d='M2 16h28M16 2a14 14 0 0114 14 14 14 0 01-14 14 14 14 0 01-14-14A14 14 0 0116 2zm0 0v28M9 16a7 7 0 0014 0 7 7 0 00-14 0z' fill='none' stroke='%23000' stroke-width='1'/></svg>">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
 
@@ -303,49 +304,49 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       }
 
       async renderMarkdown() {
-    const html = this.md.render(this.input.value);
-    this.output.innerHTML = "<div contenteditable='true'>" + html + "</div>";
-    
-    // Convert all images to data URLs immediately after rendering
-    const contentDiv = this.output.querySelector('div[contenteditable="true"]');
-    const images = contentDiv.querySelectorAll('img');
-    
-    for (const img of images) {
-        try {
+        const html = this.md.render(this.input.value);
+        this.output.innerHTML = "<div contenteditable='true'>" + html + "</div>";
+
+        // Convert all images to data URLs immediately after rendering
+        const contentDiv = this.output.querySelector('div[contenteditable="true"]');
+        const images = contentDiv.querySelectorAll('img');
+
+        for (const img of images) {
+          try {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            
+
             // Create new image and wait for it to load
             const tempImg = new Image();
             tempImg.crossOrigin = 'anonymous';
-            
+
             await new Promise((resolve, reject) => {
-                tempImg.onload = () => {
-                    // Set canvas size to match image
-                    canvas.width = tempImg.naturalWidth;
-                    canvas.height = tempImg.naturalHeight;
-                    
-                    // Draw image to canvas
-                    ctx.drawImage(tempImg, 0, 0);
-                    
-                    // Convert to data URL
-                    const dataUrl = canvas.toDataURL('image/png', 1.0);
-                    
-                    // Update original image
-                    img.src = dataUrl;
-                    resolve();
-                };
-                tempImg.onerror = reject;
-                tempImg.src = img.src;
+              tempImg.onload = () => {
+                // Set canvas size to match image
+                canvas.width = tempImg.naturalWidth;
+                canvas.height = tempImg.naturalHeight;
+
+                // Draw image to canvas
+                ctx.drawImage(tempImg, 0, 0);
+
+                // Convert to data URL
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+                // Update original image
+                img.src = dataUrl;
+                resolve();
+              };
+              tempImg.onerror = reject;
+              tempImg.src = img.src;
             });
-        } catch (error) {
+          } catch (error) {
             console.error('Failed to convert image:', error);
+          }
         }
-    }
-    
-    // Initialize mermaid diagrams after all images are processed
-    mermaid.init(undefined, this.output.querySelectorAll('.mermaid'));
-}
+
+        // Initialize mermaid diagrams after all images are processed
+        mermaid.init(undefined, this.output.querySelectorAll('.mermaid'));
+      }
 
       setView(view) {
         this.currentView = view;
@@ -439,61 +440,57 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
               console.error('Failed to convert SVG:', error);
             }
           }
-          // ========================================================================================================
-          //mc images
-          
+         
           const imgElements = clone.querySelectorAll('img');
-await Promise.all(imgElements.map(async img => {
-    console.log('Converting image:', img.src);
-    
-    // Create canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Create new image and wait for it to load completely
-    const tempImg = new Image();
-    tempImg.crossOrigin = 'anonymous';
-    
-    try {
-        await new Promise((resolve, reject) => {
-            tempImg.onload = resolve;
-            tempImg.onerror = reject;
-            tempImg.src = img.src;
-        });
-        
-        // Set dimensions
-        canvas.width = tempImg.naturalWidth || img.width || 100;
-        canvas.height = tempImg.naturalHeight || img.height || 100;
-        
-        // Draw and convert
-        ctx.drawImage(tempImg, 0, 0);
-        const dataUrl = canvas.toDataURL('image/png', 1.0);
-        
-        // Create and wait for new image with data URL
-        const newImg = new Image();
-        await new Promise((resolve, reject) => {
-            newImg.onload = () => {
-                newImg.alt = img.alt || 'Converted image';
-                newImg.width = canvas.width;
-                newImg.height = canvas.height;
-                newImg.style.cssText = img.style.cssText;
-                // Force image to be treated as embedded
-                newImg.setAttribute('data-embedded', 'true');
-                // Replace the old image
-                img.parentNode.replaceChild(newImg, img);
-                console.log('Successfully converted image to data URL');
-                resolve();
-            };
-            newImg.onerror = reject;
-            newImg.src = dataUrl;
-        });
-    } catch (error) {
-        console.error('Error converting image:', error, img.src);
-        // Don't rethrow - we want to continue with other images
-    }
-}));
-          //mc end images
-          // ========================================================================================================
+          await Promise.all(imgElements.map(async img => {
+            console.log('Converting image:', img.src);
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Create new image and wait for it to load completely
+            const tempImg = new Image();
+            tempImg.crossOrigin = 'anonymous';
+
+            try {
+              await new Promise((resolve, reject) => {
+                tempImg.onload = resolve;
+                tempImg.onerror = reject;
+                tempImg.src = img.src;
+              });
+
+              // Set dimensions
+              canvas.width = tempImg.naturalWidth || img.width || 100;
+              canvas.height = tempImg.naturalHeight || img.height || 100;
+
+              // Draw and convert
+              ctx.drawImage(tempImg, 0, 0);
+              const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+              // Create and wait for new image with data URL
+              const newImg = new Image();
+              await new Promise((resolve, reject) => {
+                newImg.onload = () => {
+                  newImg.alt = img.alt || 'Converted image';
+                  newImg.width = canvas.width;
+                  newImg.height = canvas.height;
+                  newImg.style.cssText = img.style.cssText;
+                  // Force image to be treated as embedded
+                  newImg.setAttribute('data-embedded', 'true');
+                  // Replace the old image
+                  img.parentNode.replaceChild(newImg, img);
+                  console.log('Successfully converted image to data URL');
+                  resolve();
+                };
+                newImg.onerror = reject;
+                newImg.src = dataUrl;
+              });
+            } catch (error) {
+              console.error('Error converting image:', error, img.src);
+              // Don't rethrow - we want to continue with other images
+            }
+          }));
 
           const clipData = new ClipboardItem({
             'text/html': new Blob([`
