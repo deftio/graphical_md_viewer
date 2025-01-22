@@ -173,7 +173,7 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       };
 
       static version = {
-        version: "0.0.18"
+        version: "0.0.20"
       };
 
       constructor(element, options = {}) {
@@ -311,6 +311,8 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
         const contentDiv = this.output.querySelector('div[contenteditable="true"]');
         const images = contentDiv.querySelectorAll('img');
 
+        // render images to data urls
+
         for (const img of images) {
           try {
             const canvas = document.createElement('canvas');
@@ -342,11 +344,14 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
           } catch (error) {
             console.error('Failed to convert image:', error);
           }
+
         }
+
+        // end of images to data urls
 
         // Initialize mermaid diagrams after all images are processed
         mermaid.init(undefined, this.output.querySelectorAll('.mermaid'));
-      }
+      } // end of renderMarkdown
 
       setView(view) {
         this.currentView = view;
@@ -440,7 +445,9 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
               console.error('Failed to convert SVG:', error);
             }
           }
-         
+
+
+          // Convert all images to data URLs
           const imgElements = clone.querySelectorAll('img');
           await Promise.all(imgElements.map(async img => {
             console.log('Converting image:', img.src);
@@ -461,8 +468,8 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
               });
 
               // Set dimensions
-              canvas.width = tempImg.naturalWidth || img.width || 100;
-              canvas.height = tempImg.naturalHeight || img.height || 100;
+              canvas.width = tempImg.offsetWidth || img.offsetWidth || 200;
+              canvas.height = tempImg.offsetHeight || img.offsetHeight || 200;
 
               // Draw and convert
               ctx.drawImage(tempImg, 0, 0);
@@ -491,6 +498,7 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
               // Don't rethrow - we want to continue with other images
             }
           }));
+
 
           const clipData = new ClipboardItem({
             'text/html': new Blob([`
@@ -598,6 +606,55 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
 
       getHTMLSource() {
         return this.output.querySelector('div[contenteditable="true"]').innerHTML;
+      }
+
+      // Standalone function to toggle between Markdown preview and split view
+      toggleView() {
+        const editor = window.editor;
+        if (editor.currentView === 'md') {
+          editor.setView('split');
+        } else if (editor.currentView === 'split') {
+          editor.setView('html');
+        } else
+          editor.setView('md')
+
+        console.log(editor.currentView)
+      }
+
+      /**
+       * Creates an iframe that fills the entire parent element and injects provided HTML content.
+       * @param {HTMLElement} parentElement - The parent element to contain the iframe.
+       * @param {string} htmlContent - The HTML content to inject into the iframe.
+       */
+      insertContentInIframe(parentElement, htmlContent) {
+        // Create an iframe element
+        const iframe = document.createElement('iframe');
+
+        // Style the iframe to fill the parent completely
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.style.display = 'block';
+
+        //iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+        // Append the iframe to the parent element
+        parentElement.innerHTML = '';
+        parentElement.appendChild(iframe);
+
+        // Access the iframe's document and write the HTML content into it
+        const iframeDoc = iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(htmlContent);
+        iframeDoc.close();
+        this.output_iframe= iframe
+        this.output_ifraome_content=htmlContent;
+      }
+      // this function takes input as html and renders it in an iframe in the output div
+      // it write to the outputDiv that is a member of this object
+      writeHTMLContent(src) {
+        const htmlContent = src;
+        const outputDiv = this.output;
+        this.insertContentInIframe(outputDiv, htmlContent);
       }
 
       async copyMarkdown() {
@@ -853,23 +910,69 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
         }
         return 'unknown';
       }
-    }
 
-    // Standalone function to toggle between Markdown preview and split view
-    function toggleView() {
-      const editor = window.editor;
-      if (editor.currentView === 'md') {
-        editor.setView('split');
-      } else if (editor.currentView === 'split') {
-        editor.setView('html');
-      } else
-        editor.setView('md')
+      // Make a complete HTML page from a div (or any html snippet) with optional editability
+      makeHTMLPageFromDiv(inputDivHTML, editable = false) {
+        let editableAttr = editable ? 'contenteditable="true"' : '';
+        let s =
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Viewer with Graphics Support</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <xscripx src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></xscripx>
+    <xscripx src="https://unpkg.com/mermaid/dist/mermaid.min.js"></xscripx>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            /* margin: 20px; */
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .graphical-md-output {
+            width: 50%;
+            margin: auto;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body ${editableAttr}>
+    ${inputDivHTML}
+</body>
+</html>`;
+        // now we need to remove the temp-script tag with the script in it.
+        // we do this with a regex search/replace
+        s = s.replaceAll("xscripx", "script");
+        console.log(editableAttr);
+        return s;
+      }
 
-      console.log(editor.currentView)
-    }
+    }// end of class GraphicalMD
+
   </script>
 
   <script>
+    // This is the main code that creates the editor and sets the content
+    // it has nothing to do with the GraphicalMD editor
     const editor = new GraphicalMD('#editorContainer', {
       titleShow: true,
       titleContent: "Graphical Markdown Editor " + GraphicalMD.version.version
@@ -962,7 +1065,7 @@ You can also include regular text, lists, images, and more:
 
 With regular image (md):
 
-![Image](/palm.png)
+![Image](palm.png)
 
 Image with embedded html:
 
@@ -979,6 +1082,8 @@ Image with embedded html:
       const currentState = editor.controls.style.display !== 'none';
       editor.controlsShow(!currentState);
     }
+
+
   </script>
 </body>
 
