@@ -1,8 +1,8 @@
 # Markdown Viewer with Graphics Support
 
-
 Welcome to the **Graphical Markdown Converter** demo. This document showcases various features such as live preview, Mermaid diagrams, syntax-highlighted code blocks, tables, and inline SVG graphics.
 
+[Code is Here on GitHub](www.github.com/deftio/graphics-md-viewer)
 ## Diagram Example
 
 Below is a Mermaid diagram demonstrating a simple flow:
@@ -33,7 +33,7 @@ Here's a JavaScript code snippet with syntax highlighting:
 // A simple greeting function
 let name="World";
 function greet(name) {
-    console.log(`Hello, ${name}!`);
+    console.log(\`Hello, \${name}!\`);
 }
 
 greet("World");
@@ -78,3 +78,13 @@ You can also include regular text, lists, images, and more:
 - Bullet points are supported.
 - **Bold** and *italic* text work seamlessly.
 - [Links](https://github.com) can be included.
+
+## Image Support
+
+With regular image (md):
+
+![Image](palm.png)
+
+Image with embedded html:
+
+<img src="sample.webp" alt="drawing" width="200"/>
