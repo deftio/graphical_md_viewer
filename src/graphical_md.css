@@ -1,0 +1,93 @@
+ .graphical-md {
+     height: 100%;
+     display: flex;
+     flex-direction: column;
+ }
+
+ .graphical-md-controls {
+     padding: 0.2em 0;
+     text-align: left;
+ }
+
+ .graphical-md-controls button {
+     border-radius: 4px;
+     background-color: #2a57d3;
+     border: none;
+     color: white;
+     padding: 0.4em 0.7em;
+     cursor: pointer;
+     font-size: 1rem;
+     margin-right: 0.5em;
+ }
+
+ .graphical-md-controls button.active {
+     background-color: #e0e0e0;
+     border: 1px solid #2a57d3;
+     color: #255ff1;
+ }
+
+ .graphical-md-editor {
+     display: flex;
+     flex: 1;
+     min-height: 0;
+     /* Important for Firefox */
+ }
+
+ .graphical-md-input,
+ .graphical-md-output {
+     height: 100%;
+     box-sizing: border-box;
+     border: 2px solid #ccc;
+     border-radius: 8px;
+ }
+
+ .graphical-md-input {
+     padding: 1em;
+     font-family: monospace;
+     font-size: 1em;
+ }
+
+ .graphical-md-output {
+     padding: 1em;
+     overflow: auto;
+     border-left: 1px solid #ccc;
+ }
+
+ .hidden {
+     display: none !important;
+ }
+
+ .graphical-md-output table {
+     border-collapse: collapse;
+     width: 100%;
+     margin-bottom: 1em;
+ }
+
+ .graphical-md-output th,
+ .graphical-md-output td {
+     border: 1px solid #ccc;
+     padding: 0.5em;
+     text-align: left;
+ }
+
+ .graphical-md-output th {
+     background: #f0f0f0;
+ }
+
+ .graphical-md-output pre code {
+     display: block;
+     padding: 0.5em;
+     background: #f7f7f7;
+     border-radius: 4px;
+ }
+
+ [contenteditable] {
+     outline: 0px solid transparent;
+     caret-color: red;
+ }
+
+ .graphical-md-title {
+     padding: 0 0;
+     font-size: 1.5em;
+     text-align: left;
+ }
