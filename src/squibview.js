@@ -1,4 +1,4 @@
-/* Graphical Markdown Editor
+/* SquibView a live md/html/etc Editor/renderer with copy support
  supports markdown, html, and split view
  supports copying of formatted html and markdown
  supports copying of images as data urls
@@ -8,22 +8,22 @@
  by deftio (c) 2024
 */
 
-class GraphicalMD {
+class SquibView {
     static defaultOptions = {
       initialContent: '',
       showControls: true,
-      titleShow: false,
+      titleShow: false,        
       titleContent: '',
       initialView: 'split',
-      baseClass: 'graphical-md'
+      baseClass: 'squibview'
     };
 
     static version = {
-      version: "0.0.22"
+      version: "0.0.23"
     };
 
     constructor(element, options = {}) {
-      this.options = { ...GraphicalMD.defaultOptions, ...options };
+      this.options = { ...SquibView.defaultOptions, ...options };
       this.container = typeof element === 'string' ? document.querySelector(element) : element;
 
       if (!this.container) {
@@ -242,24 +242,24 @@ class GraphicalMD {
       const copyHTMLButton = this.controls.querySelector('.copy-html-button');
 
       if (view === 'md') {
-        this.input.classList.remove('graphical-md-hidden');
-        this.output.classList.add('graphical-md-hidden');
+        this.input.classList.remove('squibview-hidden');
+        this.output.classList.add('squibview-hidden');
         this.input.style.width = '100%';
-        copyMDButton.classList.remove('graphical-md-hidden');
-        copyHTMLButton.classList.add('graphical-md-hidden');
+        copyMDButton.classList.remove('squibview-hidden');
+        copyHTMLButton.classList.add('squibview-hidden');
       } else if (view === 'html') {
-        this.input.classList.add('graphical-md-hidden');
-        this.output.classList.remove('graphical-md-hidden');
+        this.input.classList.add('squibview-hidden');
+        this.output.classList.remove('squibview-hidden');
         this.output.style.width = '100%';
-        copyMDButton.classList.add('graphical-md-hidden');
-        copyHTMLButton.classList.remove('graphical-md-hidden');
+        copyMDButton.classList.add('squibview-hidden');
+        copyHTMLButton.classList.remove('squibview-hidden');
       } else {
-        this.input.classList.remove('graphical-md-hidden');
-        this.output.classList.remove('graphical-md-hidden');
+        this.input.classList.remove('squibview-hidden');
+        this.output.classList.remove('squibview-hidden');
         this.input.style.width = '50%';
         this.output.style.width = '50%';
-        copyMDButton.classList.remove('graphical-md-hidden');
-        copyHTMLButton.classList.remove('graphical-md-hidden');
+        copyMDButton.classList.remove('squibview-hidden');
+        copyHTMLButton.classList.remove('squibview-hidden');
       }
 
       this.adjustLayout();
@@ -809,7 +809,7 @@ class GraphicalMD {
           box-sizing: border-box;
           padding: 20px;
       }
-      .graphical-md-output {
+      .squibview-output {
           width: 50%;
           margin: auto;
       }

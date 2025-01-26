@@ -9,20 +9,20 @@ text.error-text {
     display: none;
 }
 
-/* graphical-md specific styles */
+/* squibview specific styles */
 
-.graphical-md {
+.squibview {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.graphical-md-controls {
+.squibview-controls {
     padding: 0.2em 0;
     text-align: left;
 }
 
-.graphical-md-controls button {
+.squibview-controls button {
     border-radius: 4px;
     background-color: #2a57d3;
     border: none;
@@ -33,61 +33,61 @@ text.error-text {
     margin-right: 0.5em;
 }
 
-.graphical-md-controls button.active {
+.squibview-controls button.active {
     background-color: #e0e0e0;
     border: 1px solid #2a57d3;
     color: #255ff1;
 }
 
-.graphical-md-editor {
+.squibview-editor {
     display: flex;
     flex: 1;
     min-height: 0;
     /* Important for Firefox */
 }
 
-.graphical-md-input,
-.graphical-md-output {
+.squibview-input,
+.squibview-output {
     height: 100%;
     box-sizing: border-box;
     border: 2px solid #ccc;
     border-radius: 8px;
 }
 
-.graphical-md-input {
+.squibview-input {
     padding: 1em;
     font-family: monospace;
     font-size: 1em;
 }
 
-.graphical-md-output {
+.squibview-output {
     padding: 1em;
     overflow: auto;
     border-left: 1px solid #ccc;
 }
 
-.graphical-md-hidden {
+.squibview-hidden {
     display: none !important;
 }
 
-.graphical-md-output table {
+.squibview-output table {
     border-collapse: collapse;
     width: 100%;
     margin-bottom: 1em;
 }
 
-.graphical-md-output th,
-.graphical-md-output td {
+.squibview-output th,
+.squibview-output td {
     border: 1px solid #ccc;
     padding: 0.5em;
     text-align: left;
 }
 
-.graphical-md-output th {
+.squibview-output th {
     background: #f0f0f0;
 }
 
-.graphical-md-output pre code {
+.squibview-output pre code {
     display: block;
     padding: 0.5em;
     background: #f7f7f7;
@@ -99,7 +99,7 @@ text.error-text {
     caret-color: red;
 }
 
-.graphical-md-title {
+.squibview-title {
     padding: 0 0;
     font-size: 1.5em;
     text-align: left;

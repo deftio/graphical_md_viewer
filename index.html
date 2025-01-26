@@ -18,7 +18,7 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
 
-  <link rel="stylesheet" href="./src/graphical_md.css">
+  <link rel="stylesheet" href="./src/squibview.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -40,7 +40,12 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       border-radius: 5px;
     }
 
-   
+    .error-icon {
+      display: none;
+    }
+    text.error-text {
+      display: none;
+    }
   </style>
 </head>
 
@@ -50,7 +55,7 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
   <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.3.2/markdown-it.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
   <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
-  <script src="./src/graphical_md.js"></script>
+  <script src="./src/squibview.js"></script>
   <!-- 
   <div id="testControls">
     <button onclick="toggleTitle()" style="margin-right: 10px; padding: 8px 16px; border-radius: 4px; border: 1px solid #2a57d3; background: white; color: #2a57d3; cursor: pointer;">Toggle Title</button>
@@ -72,12 +77,12 @@ Also supports Mermaid diagrams and SVG content within fenced code blocks.
       window.editor.setContent(newMarkdown);
     }
 
- 
+
     // This is the main code that creates the editor and sets the content
     // it has nothing to do with the GraphicalMD editor
-    const editor = new GraphicalMD('#editorContainer', {
+    const editor = new SquibView('#editorContainer', {
       titleShow: true,
-      titleContent: "Graphical Markdown Editor " + GraphicalMD.version.version
+      titleContent: "SquibView Editor " + SquibView.version.version
     });
 
     window.editor = editor; // Make the editor instance accessible globally
